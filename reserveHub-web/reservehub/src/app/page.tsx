@@ -15,22 +15,17 @@ export default function Home() {
         <br />
         Reservation Portal
       </h1>
-      {loginStatus && (
-        <p className="text-center text-2xl my-4">
-          Welcome Jackson
-        </p>
-      )}
       {loginStatus ? (
         <Link href={"/dashboard"}>
           <span className="bg-white text-sky-600 block text-center max-w-48 mx-auto py-2 rounded-full hover:bg-black hover:text-sky-400 hover:cursor-pointer">
             {" "}
-            Volunteers Start Here
+            Start Here
           </span>
         </Link>
       ) : (
-        <Link href={"/reservation"}>
+        <Link href={"/signup"}>
           <span className="bg-white text-sky-600 block text-center max-w-48 mx-auto py-2 rounded-full hover:bg-black hover:text-sky-400 hover:cursor-pointer">
-            Clients Start Here
+            Login
           </span>
         </Link>
       )}
