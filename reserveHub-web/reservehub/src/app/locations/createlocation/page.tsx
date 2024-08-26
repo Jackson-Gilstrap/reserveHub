@@ -2,6 +2,7 @@
 // this forms edge cases are questionable will need to look into it more MVP functionality works post to backend
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const CreateLocation = () => {
   const [name, setName] = useState("");
@@ -11,6 +12,7 @@ const CreateLocation = () => {
   const [zipcode, setZipcode] = useState("");
   const [successMsg, setSuccessMsg] = useState("")
   const [clearMsg,setClearMsg] = useState("Form Has been Cleared")
+  const router = useRouter()
 
  const clearInputs = () =>  {
     setName("");
@@ -43,6 +45,7 @@ const CreateLocation = () => {
       }).catch((error) => {
         console.error("Fetch error ", error.message);
       });
+      router.push("/locations")
 
     console.log(app_data_json);
   };

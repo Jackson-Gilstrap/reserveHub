@@ -1,8 +1,32 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 const Appointments = () => {
+  const [appointment_array, setAppointmentArray] = useState([]);
+  //get all appointments
+
+  const get_appointments = () => {
+    fetch("http://localhost:5000/api/apps_retrival")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Response Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data.body);
+        setAppointmentArray(data.body);
+      })
+      .catch((error) => {
+        console.error("there was a problem with the fetch operation", error);
+      });
+  };
+
+  useEffect(() => {
+    get_appointments();
+  }, []);
   return (
     <>
       <header>
@@ -39,17 +63,26 @@ const Appointments = () => {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td className="border border-slate-600 text-center px-2">
-                Hartwick
-              </td>
-              <td className="border border-slate-600 text-center px-2">
-                08/13/24
-              </td>
-              <td className="border border-slate-600 text-center px-2">7:00</td>
-              <td className="border border-slate-600 text-center px-2">5/6</td>
-              <td className="border border-slate-600 text-center px-2">Edit</td>
-            </tr>
+            {appointment_array.map((appointment: any) => (
+              <tr key={appointment.app_id}>
+                <td className="border border-slate-600 text-left px-2">
+                  {appointment.app_title}
+                </td>
+                <td className="border border-slate-600 text-center px-2">
+                  {appointment.app_date}
+                </td>
+                <td className="border border-slate-600 text-center px-2">
+                  {appointment.app_time}
+                </td>
+                <td className="border border-slate-600 text-center px-2">
+                  {appointment.cur_slots}/{appointment.max_slots}
+                </td>
+                <td className="border border-slate-600 text-center px-2">
+                  <Link href={{pathname:`/appointments/${appointment.app_id}`, query: {app_id: JSON.stringify(appointment.app_id)}}}>Edit</Link>
+                </td>
+              </tr>
+            ))}
+            
           </tbody>
         </table>
       </section>
