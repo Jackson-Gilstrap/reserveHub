@@ -9,7 +9,6 @@ interface State {
   reservationTime: string;
   reservationLocation: string;
   reservationType: string;
-  reservationDuration: string;
 }
 
 const initialState: State = {
@@ -21,7 +20,6 @@ const initialState: State = {
   reservationTime: "",
   reservationLocation: "",
   reservationType: "",
-  reservationDuration: "",
 };
 
 const reservationSlice = createSlice({
@@ -52,9 +50,6 @@ const reservationSlice = createSlice({
       state.reservationLocation = action.payload;
     },
 
-    setDuration: (state, action) => {
-      state.reservationDuration = action.payload;
-    },
     setType: (state, action) => {
       state.reservationType = action.payload;
     },
@@ -67,7 +62,6 @@ export const {
     setDate,
     setTime,
     setType,
-    setDuration,
     setGivenName,
     setSurname,
     setPhoneNumber,

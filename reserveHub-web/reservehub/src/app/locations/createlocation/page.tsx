@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { current } from "@reduxjs/toolkit";
 
 const CreateLocation = () => {
   const [name, setName] = useState("");
@@ -10,21 +11,46 @@ const CreateLocation = () => {
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
   const [zipcode, setZipcode] = useState("");
+  const [weekdays, setWeekdays]= useState(new Set<string>())
   const [successMsg, setSuccessMsg] = useState("")
   const [clearMsg,setClearMsg] = useState("Form Has been Cleared")
   const router = useRouter()
 
  const clearInputs = () =>  {
+  console.log(clearMsg)
     setName("");
     setStreetAddress("");
     setCity("");
     setState("");
     setZipcode("");
+    setWeekdays(new Set<string>())
 
  }
-  const handleCreate =  async (e: any) => {
+
+ const handleWeekdaySelect = (day:string | null, weekdaySet:Set<string>) => {
+   if(!day) return 
+   const newWeekdaySet = new Set(weekdaySet)
+   console.log(newWeekdaySet)
+  //check if e exists in weekdays
+  if(newWeekdaySet.has(day)) {
+    console.log(`${day} is already been selected and will be removed.`)
+    newWeekdaySet.delete(day)
+  }else {
+    console.log(`${day} will be added to the selected weekdays`)
+    newWeekdaySet.add(day);
+  }
+  
+  setWeekdays(newWeekdaySet)
+  console.log(newWeekdaySet)
+  
+  //look to create a set for the weekdays those are unique value mutable data structures
+ }
+  const handleCreate =  async (e: any, weekdaySet:Set<string>) => {
     e.preventDefault();
-    const app_data = {name,streetAddress,city,state,zipcode}
+    //convert set to array
+
+    const weekdayArray = Array.from(weekdaySet)
+    const app_data = {name,streetAddress,city,state,zipcode,weekdayArray}
     const app_data_json = JSON.stringify(app_data)
 
     await fetch("http://localhost:5000/api/loc-create", {
@@ -51,14 +77,14 @@ const CreateLocation = () => {
   };
   return (
     <>
-      <Link href={"/appointments"} className="block">
+      <Link href={"/locations"} className="block">
         <button className="px-3 py-1 my-2 mx-2 bg-white text-slate-700 rounded-md border-1 border-black hover:bg-slate-200">
           Back
         </button>
       </Link>
       <h1 className="text-center">Create Location</h1>
       <form
-        action={"/appointments"}
+        action={"/locations"}
         method="POST"
         className=" mx-auto max-w-3xl border-slate-200 border rounded-md"
       >
@@ -130,11 +156,21 @@ const CreateLocation = () => {
             required
           />
         </div>
+        <div className="px-1 py-2 mb-2 ">
+          <label htmlFor="weekdays" className="px-1 py-2 space-x-8">
+            Weekdays
+          </label>
+          <div className="flex border-2 border-white py-2 px-2 justify-evenly">
+            {['Sun', 'Mon', 'Tue','Wed','Thu','Fri','Sat'].map((day)=>(
+              <span key={day} className={weekdays.has(day)? "border-2 border-white px-2.5 py-1.5 bg-blue-400 hover:bg-blue-200 hover:cursor-pointer":"border-2 border-white px-2.5 py-1.5 hover:cursor-pointer hover:bg-white hover:text-black"} onClick={(e)=> handleWeekdaySelect((e.target as HTMLSpanElement).textContent, weekdays)}>{day}</span>
+            ))}
+          </div>
+        </div>
         
         <div className="text-center mb-3">
           <button
             type="submit"
-            onClick={handleCreate}
+            onClick={(e) => handleCreate(e, weekdays)}
             className=" border-2 border-lime-400 bg-lime-600 px-3 py-1 mb-4 rounded-sm mx-auto hover:bg-lime-500"
           >
             Create

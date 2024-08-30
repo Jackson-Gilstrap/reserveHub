@@ -5,8 +5,8 @@ import { useState, useEffect } from "react";
 const Locations = () => {
   const [locations_array, setLocationArray] = useState([]);
   
-  const get_locations = async () => {
-    await fetch("http://localhost:5000/api/locs-retrival")
+  const get_locations =  () => {
+     fetch("http://localhost:5000/api/locs-retrival")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network request unsuccessful");
@@ -23,7 +23,7 @@ const Locations = () => {
 
   useEffect(()=> {
     get_locations();
-  },[locations_array])
+  },[])
   return (
     <>
       <header>

@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const { Client } = require("pg");
+const createBookingRef  = require("./utility/bookingRef.js")
 const app = express();
 
 app.use(express.json());
@@ -68,6 +69,43 @@ app.get("/api/app_retrival/:app_id", async (req, res) => {
         body: app_row.rows[0],
         message: "Retrieved appointment",
       });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({
+      status: "failed",
+      message: "Internal server error",
+    });
+  } finally {
+    await client.end();
+  }
+});
+
+app.get("/api/apps_retrival_by_location/:location_name", async (req, res) => {
+  const client = createClient();
+  let empty_array = []
+  const location_name = req.params.location_name;
+
+  try {
+    await client.connect();
+
+    const app_row = await client.query(
+      "SELECT * FROM appointments WHERE app_location = $1",
+      [location_name]
+    );
+    console.log(app_row.rows);
+    if (app_row.rows.length > 0) {
+      res.status(200).send({
+        status: "success",
+        body: app_row.rows,
+        message: `Retrieved appointments for location: ${location_name}`,
+      });
+    } else {
+      res.status(200).send({
+        status: "Not found",
+        body: empty_array,
+        message: "there are not appointments for this location"
+      })
     }
   } catch (error) {
     console.error(error);
@@ -248,12 +286,12 @@ app.get("/api/loc-retrival/:id", async (req, res) => {
 app.post("/api/loc-create", async (req, res) => {
   console.log(req.body);
   const client = createClient()
-  const {name, streetAddress, city, state, zipcode} = req.body
-
+  const {name, streetAddress, city, state, zipcode, weekdayArray} = req.body
+  console.log("weekday Array: ",weekdayArray)
   try {
     await client.connect();
 
-    const loc_row = await client.query("INSERT INTO locations(location_name, location_street_address, location_city, location_state, location_zipcode)VALUES($1,$2,$3,$4,$5) RETURNING *", [name, streetAddress, city,state, zipcode])
+    const loc_row = await client.query("INSERT INTO locations(location_name, location_street_address, location_city, location_state, location_zipcode, weekdays)VALUES($1,$2,$3,$4,$5, $6) RETURNING *", [name, streetAddress, city,state, zipcode, weekdayArray])
 
     if(loc_row.rows.length > 0) {
       res.status(201).send({
@@ -271,9 +309,7 @@ app.post("/api/loc-create", async (req, res) => {
   } finally {
     await client.end();
   }
-  res
-    .status(200)
-    .json({ message: "Location created successfully", data: req.body });
+  
 });
 
 app.put("/api/loc-edit/:id", async (req, res) => {
@@ -281,14 +317,14 @@ app.put("/api/loc-edit/:id", async (req, res) => {
   const client = createClient();
   const loc_id = parseInt(req.params.id);
   console.log(loc_id)
-  const { loc_title, loc_street_address, loc_city, loc_state, loc_zipcode } =
+  const { loc_title, loc_street_address, loc_city, loc_state, loc_zipcode, weekdayArray } =
     req.body;
 
   try {
     await client.connect();
     const edit_loc = await client.query(
-      "UPDATE locations set location_name = $1, location_street_address = $2, location_city = $3, location_state = $4, location_zipcode = $5 WHERE location_id = $6 RETURNING *",
-      [loc_title, loc_street_address, loc_city, loc_state, loc_zipcode, loc_id]
+      "UPDATE locations set location_name = $1, location_street_address = $2, location_city = $3, location_state = $4, location_zipcode = $5, weekdays = $6 WHERE location_id = $7 RETURNING *",
+      [loc_title, loc_street_address, loc_city, loc_state, loc_zipcode, weekdayArray, loc_id]
     );
     console.log(edit_loc.rows);
     if (edit_loc.rows.length > 0) {

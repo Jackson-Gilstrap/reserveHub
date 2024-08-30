@@ -125,8 +125,8 @@ const CreateAppointment = () => {
             <option value="null">
               Select One
             </option>
-            <option value="hartwick-college">Hartwick College</option>
-            <option value="huntington-memorial">Huntington Memorial</option>
+            <option value="Hartwick College">Hartwick College</option>
+            <option value="Huntington Memorial">Huntington Memorial</option>
           </select>
         </div>
         <div className="px-1 py-2 mb-2">

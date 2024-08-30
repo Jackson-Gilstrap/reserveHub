@@ -12,11 +12,31 @@ const EditLocation = () => {
   const [loc_city, setCity] = useState("");
   const [loc_state, setState] = useState("");
   const [loc_zipcode, setZipcode] = useState("");
+  const [weekdays, setWeekdays] = useState(new Set<string>());
+
   const [showModal, setShowModal] = useState(false);
 
   const searchParams = useSearchParams();
   const loc_id: string = searchParams.get("location_id") ?? "";
 
+  const handleWeekdaySelect = (day: string | null, weekdaySet: Set<string>) => {
+    if (!day) return;
+    const newWeekdaySet = new Set(weekdaySet);
+    console.log(newWeekdaySet);
+    //check if e exists in weekdays
+    if (newWeekdaySet.has(day)) {
+      console.log(`${day} is already been selected and will be removed.`);
+      newWeekdaySet.delete(day);
+    } else {
+      console.log(`${day} will be added to the selected weekdays`);
+      newWeekdaySet.add(day);
+    }
+
+    setWeekdays(newWeekdaySet);
+    console.log(newWeekdaySet);
+
+    //look to create a set for the weekdays those are unique value mutable data structures
+  };
   const get_location = async () => {
     await fetch(`http://localhost:5000/api/loc-retrival/${loc_id}`)
       .then((response) => {
@@ -33,26 +53,34 @@ const EditLocation = () => {
           location_city,
           location_state,
           location_zipcode,
+          weekdays,
+          //add weekdays from destructure
         } = data.body;
         setTitle(location_name);
         setAddress(location_street_address);
         setCity(location_city);
         setState(location_state);
         setZipcode(location_zipcode);
+        const newWeekdaySet = new Set<string>(weekdays);
+        setWeekdays(newWeekdaySet);
+        //set weekday set here
       })
       .catch((error) => {
         console.error(error);
       });
   };
 
-  const edit_location = async (e: any) => {
+  const edit_location = async (e: any, weekdaySet: Set<string>) => {
     e.preventDefault();
+
+    const weekdayArray = Array.from(weekdaySet);
     const loc_data = {
       loc_title,
       loc_street_address,
       loc_city,
       loc_state,
       loc_zipcode,
+      weekdayArray,
     };
     const loc_data_json = JSON.stringify(loc_data);
     console.log(loc_data_json);
@@ -76,7 +104,7 @@ const EditLocation = () => {
       .catch((error) => {
         console.error(error);
       });
-      router.push("/locations")
+    router.push("/locations");
   };
 
   const handle_delete = () => {
@@ -212,10 +240,35 @@ const EditLocation = () => {
             required
           />
         </div>
+        <div className="px-1 py-2 mb-2 ">
+          <label htmlFor="weekdays" className="px-1 py-2 space-x-8">
+            Weekdays
+          </label>
+          <div className="flex border-2 border-white py-2 px-2 justify-evenly">
+            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+              <span
+                key={day}
+                className={
+                  weekdays.has(day)
+                    ? "border-2 border-white px-2.5 py-1.5 bg-blue-400 hover:bg-blue-200 hover:cursor-pointer"
+                    : "border-2 border-white px-2.5 py-1.5 hover:cursor-pointer hover:bg-white hover:text-black"
+                }
+                onClick={(e) =>
+                  handleWeekdaySelect(
+                    (e.target as HTMLSpanElement).textContent,
+                    weekdays
+                  )
+                }
+              >
+                {day}
+              </span>
+            ))}
+          </div>
+        </div>
         <div className="text-center mb-3">
           <button
             type="submit"
-            onClick={edit_location}
+            onClick={(e) => edit_location(e, weekdays)}
             className=" border-2 border-lime-400 bg-lime-600 px-3 py-1 mb-4 rounded-sm mx-auto hover:bg-lime-500"
           >
             Confirm
