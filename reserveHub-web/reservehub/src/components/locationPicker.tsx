@@ -2,13 +2,19 @@
 
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { FC } from "react";
+import { setLocation } from "@/lib/features/reservation/reservationSlice";
 
 const LocationPicker = ({ date }:any) => {
 //need to set a loading indicator the request from the backend is taking too long and might over load server
   //sequential sequence user picks the date, then the location, then the appointment.
   //need to implement location days on the db and backend so that when I pull from db i can filter the loctiona array fo those specific appointments.
   const [locations, setLocations] = useState<any>([])
+  const dispatch = useDispatch()
+
+  const updateLocation = (e:any) => {
+    console.log(e.target.value)
+    dispatch(setLocation(e.target.value))
+  }
   const get_locations = () => {
      fetch("http://localhost:5000/api/locs-retrival")
       .then((response) => {
@@ -62,9 +68,10 @@ const LocationPicker = ({ date }:any) => {
       <div className="border-2 border-white flex justify-evenly py-2">
         {locations && locations.length > 0 ? (
             locations.map((location:any) => (
-                <div className="border-2 border-green-500 px-4 py-4 hover:cursor-pointer hover:border-white hover:bg-green-500 hover:text-black ">
+                <button  key={location.location_id} onClick={updateLocation} value={location.location_name} className="border-2 border-green-500 px-4 py-4 hover:cursor-pointer hover:border-white hover:bg-green-500 hover:text-black ">
                     {location.location_name}
-                </div>
+                </button>
+                
             ))
         ): (
             <div>

@@ -3,14 +3,15 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import Calendar_ from "../../../components/calendar";
 import DatePicker from "@/components/datePicker";
 import LocationPicker from "@/components/locationPicker";
+import AppointmentList from "@/components/appointmentList";
 
 const BookingPage = () => {
   
   const reservation = useSelector((state: any) => state.reservation);
   const selectedDate: string = reservation.reservationDate
+  const selectedLocation: string = reservation.reservationLocation
   
   return (
     <>
@@ -25,7 +26,7 @@ const BookingPage = () => {
       </Link>
       <DatePicker />
       <LocationPicker date={selectedDate} />
-      
+      <AppointmentList location_name={selectedLocation}/>
     </>
   );
 };
