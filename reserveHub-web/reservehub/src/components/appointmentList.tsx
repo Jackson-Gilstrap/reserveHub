@@ -2,9 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { setDate,setTime, setLocation, setType } from "@/lib/features/reservation/reservationSlice";
+import { setAppointmentSelectionStatus } from "@/lib/features/global/globalSlice";
+import { useRouter } from "next/navigation";
 
 const AppointmentList = ({ location_name }: any) => {
   const dispatch = useDispatch();
+  const router = useRouter();
   const [appointmentList, setAppointmentList] = useState<any>([]);
   //create functions to get appointments based on location_name and link api
   const getAppointments = () => {
@@ -25,6 +29,20 @@ const AppointmentList = ({ location_name }: any) => {
         console.error(error);
       });
   };
+
+  const handleReserve = (appointment: any) =>  {
+    console.log("Saved Appointment Choice", appointment)
+    dispatch(setDate(appointment.app_date))
+    dispatch(setTime(appointment.app_time))
+    dispatch(setLocation(appointment.app_location))
+    dispatch(setType(appointment.app_type))
+    dispatch(setAppointmentSelectionStatus(true))
+    //possible show a success message then set delay for 3 seconds and then router.push(back one)
+    setTimeout(()=> {
+      router.push("/reservation")
+
+    },3000)
+  }
 
   return (
     <>
@@ -70,7 +88,7 @@ const AppointmentList = ({ location_name }: any) => {
                     {appointment.max_slots}
                   </p>
                 </div>
-                <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-full">
+                <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-full" onClick={()=> handleReserve(appointment)}>
                   Reserve
                 </button>
               </div>
