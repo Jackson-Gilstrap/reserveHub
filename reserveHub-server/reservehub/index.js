@@ -1,7 +1,8 @@
 const express = require("express");
 const cors = require("cors");
-const { Client } = require("pg");
-const createBookingRef  = require("./utility/bookingRef.js")
+require('dotenv').config()
+const { Pool } = require("pg");
+const createBookingRef = require("./utility/bookingRef.js");
 const app = express();
 
 app.use(express.json());
@@ -17,14 +18,15 @@ const clientConfig = {
 };
 
 function createClient() {
-  return new Client(clientConfig);
+  return new Pool(clientConfig);
 }
-//appointment apis
+// sign up apis
 app.post("/api/signup", async (req, res) => {
   console.log(req.body);
   res.status(200).json({ message: "Signup successful", data: req.body });
 });
 
+//appointment apis
 app.get("/api/apps_retrival", async (req, res) => {
   console.log(req.body);
 
@@ -47,7 +49,8 @@ app.get("/api/apps_retrival", async (req, res) => {
       message: "Internal server error",
     });
   } finally {
-    await client.end();
+    // await client.release();
+    await client.release()
   }
 });
 
@@ -77,13 +80,13 @@ app.get("/api/app_retrival/:app_id", async (req, res) => {
       message: "Internal server error",
     });
   } finally {
-    await client.end();
+    await client.release();
   }
 });
 
 app.get("/api/apps_retrival_by_location/:location_name", async (req, res) => {
   const client = createClient();
-  let empty_array = []
+  let empty_array = [];
   const location_name = req.params.location_name;
 
   try {
@@ -104,8 +107,8 @@ app.get("/api/apps_retrival_by_location/:location_name", async (req, res) => {
       res.status(200).send({
         status: "Not found",
         body: empty_array,
-        message: "there are not appointments for this location"
-      })
+        message: "there are not appointments for this location",
+      });
     }
   } catch (error) {
     console.error(error);
@@ -114,7 +117,7 @@ app.get("/api/apps_retrival_by_location/:location_name", async (req, res) => {
       message: "Internal server error",
     });
   } finally {
-    await client.end();
+    await client.release();
   }
 });
 
@@ -145,7 +148,7 @@ app.post("/api/app-create", async (req, res) => {
       body: "Internal server error",
     });
   } finally {
-    await client.end();
+    await client.release();
   }
 });
 
@@ -197,7 +200,7 @@ app.put("/api/app-edit/:id", async (req, res) => {
       body: "Internal server error",
     });
   } finally {
-    await client.end();
+    await client.release();
   }
 });
 
@@ -224,7 +227,7 @@ app.delete("/api/app-delete/:id", async (req, res) => {
       message: "Internal server error",
     });
   } finally {
-    await client.end();
+    await client.release();
   }
 });
 // location apis
@@ -251,7 +254,7 @@ app.get("/api/locs-retrival", async (req, res) => {
       message: "Internal server error",
     });
   } finally {
-    await client.end();
+    await client.release();
   }
 });
 
@@ -285,46 +288,62 @@ app.get("/api/loc-retrival/:id", async (req, res) => {
 });
 app.post("/api/loc-create", async (req, res) => {
   console.log(req.body);
-  const client = createClient()
-  const {name, streetAddress, city, state, zipcode, weekdayArray} = req.body
-  console.log("weekday Array: ",weekdayArray)
+  const client = createClient();
+  const { name, streetAddress, city, state, zipcode, weekdayArray } = req.body;
+  console.log("weekday Array: ", weekdayArray);
   try {
     await client.connect();
 
-    const loc_row = await client.query("INSERT INTO locations(location_name, location_street_address, location_city, location_state, location_zipcode, weekdays)VALUES($1,$2,$3,$4,$5, $6) RETURNING *", [name, streetAddress, city,state, zipcode, weekdayArray])
+    const loc_row = await client.query(
+      "INSERT INTO locations(location_name, location_street_address, location_city, location_state, location_zipcode, weekdays)VALUES($1,$2,$3,$4,$5, $6) RETURNING *",
+      [name, streetAddress, city, state, zipcode, weekdayArray]
+    );
 
-    if(loc_row.rows.length > 0) {
+    if (loc_row.rows.length > 0) {
       res.status(201).send({
         ststus: "success",
         body: loc_row.rows[0],
-        message: "Created location"
-      })
+        message: "Created location",
+      });
     }
   } catch (error) {
     console.error(error);
     res.status(500).send({
       status: "failed",
-      message: "Internal server error"
-    })
+      message: "Internal server error",
+    });
   } finally {
-    await client.end();
+    await client.release();
   }
-  
 });
 
 app.put("/api/loc-edit/:id", async (req, res) => {
   console.log("edit body:", req.body);
   const client = createClient();
   const loc_id = parseInt(req.params.id);
-  console.log(loc_id)
-  const { loc_title, loc_street_address, loc_city, loc_state, loc_zipcode, weekdayArray } =
-    req.body;
+  console.log(loc_id);
+  const {
+    loc_title,
+    loc_street_address,
+    loc_city,
+    loc_state,
+    loc_zipcode,
+    weekdayArray,
+  } = req.body;
 
   try {
     await client.connect();
     const edit_loc = await client.query(
       "UPDATE locations set location_name = $1, location_street_address = $2, location_city = $3, location_state = $4, location_zipcode = $5, weekdays = $6 WHERE location_id = $7 RETURNING *",
-      [loc_title, loc_street_address, loc_city, loc_state, loc_zipcode, weekdayArray, loc_id]
+      [
+        loc_title,
+        loc_street_address,
+        loc_city,
+        loc_state,
+        loc_zipcode,
+        weekdayArray,
+        loc_id,
+      ]
     );
     console.log(edit_loc.rows);
     if (edit_loc.rows.length > 0) {
@@ -341,7 +360,7 @@ app.put("/api/loc-edit/:id", async (req, res) => {
       message: "Internal server error",
     });
   } finally {
-    await client.end();
+    await client.release();
   }
 });
 
@@ -365,61 +384,155 @@ app.delete("/api/loc-delete/:id", async (req, res) => {
     });
   } catch (error) {
     console.error(error);
+    // add and error status here
   } finally {
-    await client.end();
+    await client.release();
   }
 });
- //reservation apis
 
- app.post("/api/res-create", async(req, res) => {
-  console.log(req.body)
+//reservation apis
+
+app.post("/api/res-create", async (req, res) => {
+  console.log(req.body);
   const {
     reservationLocation,
     reservationDate,
     reservationTime,
     reservationType,
-    reservationDuration,
     reservationGivenName,
     reservationSurname,
     reservationPhoneNumber,
     reservationZipcode,
-    app_id
+    app_id,
   } = req.body;
-  const bookingRef = createBookingRef(reservationLocation, reservationGivenName, reservationSurname)
-  const client = createClient()
-  await client.connect()
-  
+
+  const bookingRef = createBookingRef(
+    reservationLocation,
+    reservationGivenName,
+    reservationSurname
+  );
+  const client = createClient();
+  await client.connect();
+
   //try catch block
   try {
-    await client.query("BEGIN")
-    //check if client already exists
-    const clientRes = await client.query("SELECT * FROM clients WHERE client_given_name = $1, client_surname = $2, client_zipcode = $3",[reservationGivenName, reservationSurname, reservationZipcode])
-    if(clientRes.rows.length == 0 ) {
-      //insert client
-      const insertClient = await client.query("INSERT INTO clients (client_given_name, client_surname, client_zipcode, client_phone_number) VALUES ($1,$2,$3,$4) RETURNING *",[reservationGivenName, reservationSurname, reservationZipcode, reservationPhoneNumber]);
-      const{client_id} = insertClient.rows[0]
-      await client.query("COMMIT")
-    } else {
-      await client.query("ROLLBACK")
+    //check if client already exists outside the transaction
+    const clientRes = await client.query(
+      "SELECT * FROM clients WHERE client_given_name = $1 AND client_surname = $2 AND client_zipcode = $3",
+      [reservationGivenName, reservationSurname, reservationZipcode]
+    );
+
+    if (clientRes.rows.length > 0) {
       res.status(409).send({
         status: "Conflict",
-        message: "client already exists in system no duplicates allowed"
-      })
-      throw new Error("client already exists in system no duplicates allowed")
+        message: "Client already exists in system",
+      });
+
+      return; // early exit from function on found client
     }
 
-    //check appointment availibilty
-    const app_res = client.query("SELECT * FROM appointments WHERE app_id = $1 FOR UPDATE",[app_id])
+    await client.query("BEGIN");
+    const insertClient = await client.query(
+      "INSERT INTO clients (client_given_name, client_surname, client_zipcode, client_phone_number) VALUES ($1,$2,$3,$4) RETURNING *",
+      [
+        reservationGivenName,
+        reservationSurname,
+        reservationZipcode,
+        reservationPhoneNumber,
+      ]
+    );
+    const { client_id } = insertClient.rows[0];
 
-    const {cur_slots, max_slots} = app_res.rows[0]
+    //select appointment and destructure the ammount of slots left open on it
+    const app_res = await client.query(
+      "SELECT * FROM appointments WHERE app_id = $1 FOR UPDATE",
+      [app_id]
+    );
+    const { cur_slots, max_slots } = app_res.rows[0];
+
+    // check availability
     if (cur_slots < max_slots) {
-      await client.query("INSERT INTO reservation (booking_ref, app_id, client_id, res_date, res_time, res_type, res_location) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING *",[bookingRef, app_id, client_id ])
+      //insert reservation
+      await client.query(
+        "INSERT INTO reservation (booking_ref, app_id, client_id, res_date, res_time, res_type, res_location) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING *",
+        [
+          bookingRef,
+          app_id,
+          client_id,
+          reservationDate,
+          reservationTime,
+          reservationType,
+          reservationLocation,
+        ]
+      );
+
+      //update appointment row
+      await client.query(
+        "UPDATE appointments set cur_slots = $1 WHERE app_id = $2 ",
+        [cur_slots + 1, app_id]
+      );
+
+      await client.query("COMMIT");
+      res.status(201).send({
+        status: "Success",
+        message: "Reservation successfully created",
+      });
+    } else {
+      //appointment is full
+      await client.query(
+        "UPDATE appointments set app_status = $1 WHERE app_id = $2",
+        [0, app_id]
+      );
+      await client.query("COMMIT");
+      res.status(409).send({
+        status: "Conflict",
+        message: "Appointment is full",
+      });
     }
   } catch (error) {
-    
+    await client.query("ROLLBACK")
+    console.error(error);
+    res.status(500).send({
+      status: "failed",
+      body: "Internal server error",
+    });
+  } finally {
+    await client.release();
   }
+});
 
- })
+app.get("/api/res-retrival", async(req, res)=> {
+  const client = createClient()
+  await client.connect();
+
+  try {
+    const response  = await client.query("SELECT * FROM reservations");
+    if(response.rows.length > 0) {
+      res.status(200).send({
+        status: "Success",
+        body: response.rows,
+        message: "Reservations successfully retrieved"
+      })
+    }
+    
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({
+      status: "Failed",
+      message: "Internal server error"
+    })
+  } finally {
+    await client.release()
+  }
+})
+
+
+
+
+
+
+
 app.listen(5000, () => {
   console.log("app is listening on port 5000");
+  
 });
