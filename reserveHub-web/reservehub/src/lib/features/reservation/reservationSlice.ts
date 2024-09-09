@@ -9,6 +9,7 @@ interface State {
   reservationTime: string;
   reservationLocation: string;
   reservationType: string;
+  app_id:string;
 }
 
 const initialState: State = {
@@ -20,6 +21,7 @@ const initialState: State = {
   reservationTime: "",
   reservationLocation: "",
   reservationType: "",
+  app_id: "",
 };
 
 const reservationSlice = createSlice({

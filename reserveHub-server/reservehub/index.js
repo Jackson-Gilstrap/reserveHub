@@ -19,7 +19,7 @@ const clientConfig = {
 function createClient() {
   return new Client(clientConfig);
 }
-
+//appointment apis
 app.post("/api/signup", async (req, res) => {
   console.log(req.body);
   res.status(200).json({ message: "Signup successful", data: req.body });
@@ -227,7 +227,7 @@ app.delete("/api/app-delete/:id", async (req, res) => {
     await client.end();
   }
 });
-
+// location apis
 app.get("/api/locs-retrival", async (req, res) => {
   console.log(req.body);
   const client = createClient();
@@ -369,7 +369,57 @@ app.delete("/api/loc-delete/:id", async (req, res) => {
     await client.end();
   }
 });
+ //reservation apis
 
+ app.post("/api/res-create", async(req, res) => {
+  console.log(req.body)
+  const {
+    reservationLocation,
+    reservationDate,
+    reservationTime,
+    reservationType,
+    reservationDuration,
+    reservationGivenName,
+    reservationSurname,
+    reservationPhoneNumber,
+    reservationZipcode,
+    app_id
+  } = req.body;
+  const bookingRef = createBookingRef(reservationLocation, reservationGivenName, reservationSurname)
+  const client = createClient()
+  await client.connect()
+  
+  //try catch block
+  try {
+    await client.query("BEGIN")
+    //check if client already exists
+    const clientRes = await client.query("SELECT * FROM clients WHERE client_given_name = $1, client_surname = $2, client_zipcode = $3",[reservationGivenName, reservationSurname, reservationZipcode])
+    if(clientRes.rows.length == 0 ) {
+      //insert client
+      const insertClient = await client.query("INSERT INTO clients (client_given_name, client_surname, client_zipcode, client_phone_number) VALUES ($1,$2,$3,$4) RETURNING *",[reservationGivenName, reservationSurname, reservationZipcode, reservationPhoneNumber]);
+      const{client_id} = insertClient.rows[0]
+      await client.query("COMMIT")
+    } else {
+      await client.query("ROLLBACK")
+      res.status(409).send({
+        status: "Conflict",
+        message: "client already exists in system no duplicates allowed"
+      })
+      throw new Error("client already exists in system no duplicates allowed")
+    }
+
+    //check appointment availibilty
+    const app_res = client.query("SELECT * FROM appointments WHERE app_id = $1 FOR UPDATE",[app_id])
+
+    const {cur_slots, max_slots} = app_res.rows[0]
+    if (cur_slots < max_slots) {
+      await client.query("INSERT INTO reservation (booking_ref, app_id, client_id, res_date, res_time, res_type, res_location) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING *",[bookingRef, app_id, client_id ])
+    }
+  } catch (error) {
+    
+  }
+
+ })
 app.listen(5000, () => {
   console.log("app is listening on port 5000");
 });
