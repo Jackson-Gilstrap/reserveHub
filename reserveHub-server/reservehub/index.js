@@ -10,11 +10,11 @@ app.use(cors());
 
 // will need to change these to env variables before pushing to github
 const clientConfig = {
-  user: "postgres",
-  host: "localhost",
-  database: "reservation",
-  password: "admin",
-  port: 5432,
+  user: process.env.PGUSER,
+  host: process.env.PGHOST,
+  database: process.env.PGDATABASE,
+  password: process.env.PGPASSWORD,
+  port: process.env.PGPORT,
 };
 
 function createClient() {
