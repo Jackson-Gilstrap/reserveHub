@@ -7,6 +7,46 @@ const Appointments = () => {
   const [appointment_array, setAppointmentArray] = useState([]);
   //get all appointments
 
+  const formatDate = (date: string) => {
+    let tempArr = date.split("T");
+    return tempArr[0];
+  };
+
+  const formatTime = (time: string) => {
+    let tempArr = time.split(":");
+    const hour: number = parseInt(tempArr[0]);
+    const minute: string = tempArr[1];
+    //0,1,2 hr,min,sec -can ignore second
+    if (hour > 12) {
+      //convert hour substract 12 to get non mil time then convert to string then make new string
+      //append a PM at the end of string and build a new string
+      const newHour: string = (hour - 12).toString();
+      const timeStr = `${newHour}:${minute} PM`;
+      return timeStr;
+    } else if (hour == 12) {
+      //dont substract create new hour variable
+      const newHour: string = hour.toString();
+      const timeStr = `${newHour}:${minute} PM`;
+      return timeStr;
+    } else {
+      //if hour is in morning
+      const newHour: string = hour.toString();
+      const timeStr = `${newHour}:${minute} AM`;
+      return timeStr;
+    }
+  };
+
+  const formatSlots = (current: number, max: number) => {
+    //check if current is equal to max then convert into string
+    if (current == max) {
+      const slotStr = `Filled`;
+      return slotStr;
+    } else {
+      const slotStr = `${current}/${max}`;
+      return slotStr;
+    }
+  };
+
   const get_appointments = () => {
     fetch("http://localhost:5000/api/apps_retrival")
       .then((response) => {
@@ -69,20 +109,26 @@ const Appointments = () => {
                   {appointment.app_title}
                 </td>
                 <td className="border border-slate-600 text-center px-2">
-                  {appointment.app_date}
+                  {formatDate(appointment.app_date)}
                 </td>
                 <td className="border border-slate-600 text-center px-2">
-                  {appointment.app_time}
+                  {formatTime(appointment.app_time)}
                 </td>
                 <td className="border border-slate-600 text-center px-2">
-                  {appointment.cur_slots}/{appointment.max_slots}
+                  {formatSlots(appointment.cur_slots, appointment.max_slots)}
                 </td>
                 <td className="border border-slate-600 text-center px-2">
-                  <Link href={{pathname:`/appointments/${appointment.app_id}`, query: {app_id: JSON.stringify(appointment.app_id)}}}>Edit</Link>
+                  <Link
+                    href={{
+                      pathname: `/appointments/${appointment.app_id}`,
+                      query: { app_id: JSON.stringify(appointment.app_id) },
+                    }}
+                  >
+                    Edit
+                  </Link>
                 </td>
               </tr>
             ))}
-            
           </tbody>
         </table>
       </section>

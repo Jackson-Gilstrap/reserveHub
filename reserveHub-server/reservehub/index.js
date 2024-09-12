@@ -50,7 +50,7 @@ app.get("/api/apps_retrival", async (req, res) => {
     });
   } finally {
     // await client.release();
-    await client.release()
+    await client.end()
   }
 });
 
@@ -80,7 +80,7 @@ app.get("/api/app_retrival/:app_id", async (req, res) => {
       message: "Internal server error",
     });
   } finally {
-    await client.release();
+    await client.end();
   }
 });
 
@@ -148,7 +148,7 @@ app.post("/api/app-create", async (req, res) => {
       body: "Internal server error",
     });
   } finally {
-    await client.release();
+    await client.end();
   }
 });
 
@@ -200,7 +200,7 @@ app.put("/api/app-edit/:id", async (req, res) => {
       body: "Internal server error",
     });
   } finally {
-    await client.release();
+    await client.end();
   }
 });
 
@@ -227,7 +227,7 @@ app.delete("/api/app-delete/:id", async (req, res) => {
       message: "Internal server error",
     });
   } finally {
-    await client.release();
+    await client.end();
   }
 });
 // location apis
@@ -254,7 +254,7 @@ app.get("/api/locs-retrival", async (req, res) => {
       message: "Internal server error",
     });
   } finally {
-    await client.release();
+    await client.end();
   }
 });
 
@@ -313,7 +313,7 @@ app.post("/api/loc-create", async (req, res) => {
       message: "Internal server error",
     });
   } finally {
-    await client.release();
+    await client.end();
   }
 });
 
@@ -360,7 +360,7 @@ app.put("/api/loc-edit/:id", async (req, res) => {
       message: "Internal server error",
     });
   } finally {
-    await client.release();
+    await client.end();
   }
 });
 
@@ -386,7 +386,7 @@ app.delete("/api/loc-delete/:id", async (req, res) => {
     console.error(error);
     // add and error status here
   } finally {
-    await client.release();
+    await client.end();
   }
 });
 
@@ -497,7 +497,7 @@ app.post("/api/res-create", async (req, res) => {
       body: "Internal server error",
     });
   } finally {
-    await client.release();
+    await client.end();
   }
 });
 
@@ -522,7 +522,7 @@ app.get("/api/res-retrival", async(req, res)=> {
       message: "Internal server error"
     })
   } finally {
-    await client.release()
+    await client.end()
   }
 })
 

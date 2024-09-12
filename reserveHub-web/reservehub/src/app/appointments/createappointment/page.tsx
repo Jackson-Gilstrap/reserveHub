@@ -2,6 +2,7 @@
 // this forms edge cases are questionable will need to look into it more MVP functionality works post to backend
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const CreateAppointment = () => {
   const [title, setTitle] = useState("");
@@ -12,6 +13,8 @@ const CreateAppointment = () => {
   const [maxSlots, setMaxSlots] = useState("");
   const [successMsg, setSuccessMsg] = useState("")
   const [clearMsg,setClearMsg] = useState("Form Has been Cleared")
+
+  const router = useRouter()
 
  const clearInputs = () =>  {
     setTitle("");
@@ -46,6 +49,9 @@ const CreateAppointment = () => {
       });
 
     console.log(app_data_json);
+    setTimeout(() => {
+      router.push("/appointments")
+    }, 1500);
   };
   return (
     <>

@@ -91,6 +91,10 @@ const EditAppointment = () => {
       .catch((error) => {
         console.error(error);
       });
+
+      setTimeout(() => {
+        router.push("/appointments")
+      }, 1500);
   };
 
   const handle_delete = () => {
