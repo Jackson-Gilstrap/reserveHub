@@ -9,7 +9,7 @@ const getRandomInt = (min, max) => {
 };
 const getFirstLetterOfWord = (wordString) => {
   const new_word_string_arr = [];
-  const split_word_arr = wordString.split("-");
+  const split_word_arr = wordString.split(" ");
   if (split_word_arr.length > 1) {
     split_word_arr.forEach((word) => {
       let first_letter = word.charAt(0);
@@ -37,7 +37,7 @@ const getFirstLetterOfWord = (wordString) => {
   const ln = location_name_arr.join("");
   const cf = client_first_name_arr.toString();
   const cl = client_last_name_arr.toString();
-  const bookingRef = ln + cf + cl + toString(randomInt)
+  const bookingRef = ln + cf + cl + randomInt.toString()
   console.log(bookingRef)
   return bookingRef
 };

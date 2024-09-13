@@ -2,18 +2,18 @@
 
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setDate,setTime, setLocation, setType } from "@/lib/features/reservation/reservationSlice";
+import { setDate,setTime, setLocation, setType, setAppId } from "@/lib/features/reservation/reservationSlice";
 import { setAppointmentSelectionStatus } from "@/lib/features/global/globalSlice";
 import { useRouter } from "next/navigation";
 
-const AppointmentList = ({ location_name }: any) => {
+const AppointmentList = ({ location_name, date }: any) => {
   const dispatch = useDispatch();
   const router = useRouter();
   const [appointmentList, setAppointmentList] = useState<any>([]);
   //create functions to get appointments based on location_name and link api
   const getAppointments = () => {
     fetch(
-      `http://localhost:5000/api/apps_retrival_by_location/${location_name}`
+      `http://localhost:5000/api/apps_retrival_by_location/${location_name}/${date}`
     ) // need to update the api to support by date and location name not just location name both on front and backend.
       .then((response) => {
         if (!response.ok) {
@@ -37,6 +37,7 @@ const AppointmentList = ({ location_name }: any) => {
     dispatch(setLocation(appointment.app_location))
     dispatch(setType(appointment.app_type))
     dispatch(setAppointmentSelectionStatus(true))
+    dispatch(setAppId(appointment.app_id))
     //possible show a success message then set delay for 3 seconds and then router.push(back one)
     setTimeout(()=> {
       router.push("/reservation")

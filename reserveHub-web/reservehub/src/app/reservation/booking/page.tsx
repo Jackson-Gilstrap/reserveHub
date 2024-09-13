@@ -26,7 +26,7 @@ const BookingPage = () => {
       </Link>
       <DatePicker />
       <LocationPicker date={selectedDate} />
-      <AppointmentList location_name={selectedLocation}/>
+      <AppointmentList location_name={selectedLocation} date={selectedDate}/>
     </>
   );
 };

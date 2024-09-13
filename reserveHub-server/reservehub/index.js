@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 require('dotenv').config()
 const { Pool } = require("pg");
-const createBookingRef = require("./utility/bookingRef.js");
+const {createBookingRef} = require("./utility/bookingRef.js");
 const app = express();
 
 app.use(express.json());
@@ -84,17 +84,18 @@ app.get("/api/app_retrival/:app_id", async (req, res) => {
   }
 });
 
-app.get("/api/apps_retrival_by_location/:location_name", async (req, res) => {
+app.get("/api/apps_retrival_by_location/:location_name/:date", async (req, res) => {
   const client = createClient();
   let empty_array = [];
   const location_name = req.params.location_name;
+  const date = req.params.date;
 
   try {
     await client.connect();
 
     const app_row = await client.query(
-      "SELECT * FROM appointments WHERE app_location = $1",
-      [location_name]
+      "SELECT * FROM appointments WHERE app_location = $1 AND app_date = $2",
+      [location_name, date]
     );
     console.log(app_row.rows);
     if (app_row.rows.length > 0) {
@@ -117,7 +118,7 @@ app.get("/api/apps_retrival_by_location/:location_name", async (req, res) => {
       message: "Internal server error",
     });
   } finally {
-    await client.release();
+    await client.end();
   }
 });
 
@@ -454,7 +455,7 @@ app.post("/api/res-create", async (req, res) => {
     if (cur_slots < max_slots) {
       //insert reservation
       await client.query(
-        "INSERT INTO reservation (booking_ref, app_id, client_id, res_date, res_time, res_type, res_location) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING *",
+        "INSERT INTO reservations (booking_ref, app_id, client_id, res_date, res_time, res_type, res_location) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING *",
         [
           bookingRef,
           app_id,

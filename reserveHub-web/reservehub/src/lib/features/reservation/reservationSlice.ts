@@ -40,6 +40,9 @@ const reservationSlice = createSlice({
     setZipcode: (state, action) => {
       state.reservationZipcode = action.payload;
     },
+    setAppId: (state, action) => {
+      state.app_id = action.payload
+    },
 
     setDate: (state, action) => {
       state.reservationDate = action.payload;
@@ -64,6 +67,7 @@ export const {
     setDate,
     setTime,
     setType,
+    setAppId,
     setGivenName,
     setSurname,
     setPhoneNumber,

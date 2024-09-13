@@ -34,7 +34,6 @@ const LocationPicker = ({ date }:any) => {
         //for each location in data.body we need to loop through destructure the weekday from it 
         data.body.forEach((location:any)=> {
             const {weekdays} = location
-            console.log(typeof(weekdays))
             console.log(weekdays)
             let day:string;
             for(day of weekdays) {

@@ -29,7 +29,7 @@ const Reservation = () => {
   const reservation = useSelector((state: any) => state.reservation);
 
   const handleBooking = async () => {
-    fetch("http://localhost:5000/api/createReservation", {
+    fetch("http://localhost:5000/api/res-create", {
       method: "POST",
       headers: {
         "Content-Type": "application/json;charset=utf-8",
@@ -124,7 +124,7 @@ const Reservation = () => {
           bookingStatus &&
           clientStatus &&
           reminderStatus && (
-            <Link href={"/summary"}>
+            <Link href={"/dashboard"}>
               <button
                 className="bg-blue-500 text-white font-semibold block text-center max-w-xs mx-auto mt-8 px-6 py-3 rounded-lg hover:bg-blue-400 transition duration-300"
                 onClick={handleBooking}

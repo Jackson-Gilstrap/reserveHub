@@ -10,6 +10,33 @@ const Reservations = () => {
 
   //get all reservations
 
+  const formatDate = (date: string) => {
+    let tempArr = date.split("T");
+    return tempArr[0];
+  };
+  const formatTime = (time: string) => {
+    let tempArr = time.split(":");
+    const hour: number = parseInt(tempArr[0]);
+    const minute: string = tempArr[1];
+    //0,1,2 hr,min,sec -can ignore second
+    if (hour > 12) {
+      //convert hour substract 12 to get non mil time then convert to string then make new string
+      //append a PM at the end of string and build a new string
+      const newHour: string = (hour - 12).toString();
+      const timeStr = `${newHour}:${minute} PM`;
+      return timeStr;
+    } else if (hour == 12) {
+      //dont substract create new hour variable
+      const newHour: string = hour.toString();
+      const timeStr = `${newHour}:${minute} PM`;
+      return timeStr;
+    } else {
+      //if hour is in morning
+      const newHour: string = hour.toString();
+      const timeStr = `${newHour}:${minute} AM`;
+      return timeStr;
+    }
+  };
   const get_reservations = () => {
     fetch("http://localhost:5000/api/res-retrival")
       .then((response) => {
@@ -67,6 +94,37 @@ const Reservations = () => {
             <label htmlFor="search-booking-ref">Search</label>
             <input name="search-booking-ref" id="search-booking-ref" type="text" placeholder="Booking Ref" value={searchTerm} onChange={handleSearch}/>
           </div>
+          <div className="container mx-auto px-4 py-6">
+      <h2 className="text-xl font-semibold mb-4">Reservations</h2>
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white shadow-md rounded-lg">
+          <thead>
+            <tr>
+              <th className="px-4 py-2 border-b text-left text-gray-600 font-semibold">Booking Reference</th>
+              <th className="px-4 py-2 border-b text-left text-gray-600 font-semibold">App ID</th>
+              <th className="px-4 py-2 border-b text-left text-gray-600 font-semibold">Client ID</th>
+              <th className="px-4 py-2 border-b text-left text-gray-600 font-semibold">Date</th>
+              <th className="px-4 py-2 border-b text-left text-gray-600 font-semibold">Time</th>
+              <th className="px-4 py-2 border-b text-left text-gray-600 font-semibold">Location</th>
+              <th className="px-4 py-2 border-b text-left text-gray-600 font-semibold">Type</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredReservations.map((reservation:any, index) => (
+              <tr key={index} className="hover:bg-gray-100">
+                <td className="px-4 py-2 border-b text-black">{reservation.booking_ref}</td>
+                <td className="px-4 py-2 border-b text-black">{reservation.app_id}</td>
+                <td className="px-4 py-2 border-b text-black">{reservation.client_id}</td>
+                <td className="px-4 py-2 border-b text-black">{formatDate(reservation.res_date)}</td>
+                <td className="px-4 py-2 border-b text-black">{formatTime(reservation.res_time)}</td>
+                <td className="px-4 py-2 border-b text-black">{reservation.res_location}</td>
+                <td className="px-4 py-2 border-b text-black">{reservation.res_type}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
         </div>
     </>
   );
