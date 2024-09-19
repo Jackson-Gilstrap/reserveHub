@@ -28,6 +28,10 @@ const reservationSlice = createSlice({
   name: "reservation",
   initialState,
   reducers: {
+
+    clearReservationDetails: (state) =>initialState,
+
+
     setGivenName: (state, action) => {
       state.reservationGivenName = action.payload;
     },
@@ -72,5 +76,6 @@ export const {
     setSurname,
     setPhoneNumber,
     setZipcode,
+    clearReservationDetails
 } = reservationSlice.actions;
 export default reservationSlice.reducer;

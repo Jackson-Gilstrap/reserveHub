@@ -75,13 +75,13 @@ const ClientPage = () => {
   }
   return (
     <>
-    <Link href={"/"}>
+    <Link href={"/reservation"}>
         <div
           className={
             "border-2 border-white rounded-md px-4 py-2 mx-5 my-4 max-w-48"
           }
         >
-          <h3>Return Home &lt;--</h3>
+          <h3>Reservation wizard &lt;--</h3>
         </div>
       </Link>
       <div className="max-w-md mx-auto mt-10 p-6 bg-slate-800 shadow-md rounded-lg">

@@ -8,7 +8,7 @@ const ReservationFlow =  ( props: {questionnaire_status:any, booking_status:any,
       };
     return (
         <>
-        <div className={"border-2 border-white flex flex-col md:flex-row justify-evenly items-center p-3" }>
+        <div className={"border-2 border-white flex flex-col md:flex-row justify-evenly items-center p-3 mx-10" }>
           <p className={"my-4"}>
             Completed Questionnaire:{" "}
             {getStatusIndicator(props.questionnaire_status)}

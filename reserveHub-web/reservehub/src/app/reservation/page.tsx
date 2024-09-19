@@ -53,15 +53,15 @@ const Reservation = () => {
   return (
     <>
       <div>
-        <Link href={"/dashboard"}>
-          <div
-            className={
-              "border-2 border-white rounded-md px-4 py-2 mx-5 my-4 max-w-48"
-            }
-          >
-            <h3>Return to Dashboard &lt;--</h3>
-          </div>
-        </Link>
+      <Link href={"/dashboard"}>
+        <div
+          className={
+            "border-2 border-white rounded-md px-4 py-2 mx-10 my-4 max-w-48"
+          }
+        >
+          <h3>Dashboard &lt;--</h3>
+        </div>
+      </Link>
       </div>
 
       <ReservationFlow
@@ -124,7 +124,7 @@ const Reservation = () => {
           bookingStatus &&
           clientStatus &&
           reminderStatus && (
-            <Link href={"/dashboard"}>
+            <Link href={"/confirmation"}>
               <button
                 className="bg-blue-500 text-white font-semibold block text-center max-w-xs mx-auto mt-8 px-6 py-3 rounded-lg hover:bg-blue-400 transition duration-300"
                 onClick={handleBooking}

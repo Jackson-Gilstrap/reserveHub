@@ -18,7 +18,7 @@ const Reservations = () => {
     let tempArr = time.split(":");
     const hour: number = parseInt(tempArr[0]);
     const minute: string = tempArr[1];
-    //0,1,2 hr,min,sec -can ignore second
+    
     if (hour > 12) {
       //convert hour substract 12 to get non mil time then convert to string then make new string
       //append a PM at the end of string and build a new string

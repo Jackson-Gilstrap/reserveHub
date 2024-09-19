@@ -17,7 +17,7 @@ const NavBar = ({isUserLoggedIn}: any) => {
                 {isUserLoggedIn ? (
                     <Link href={'/'} onClick={handleLogout}><span className="text-blue-500">Log out</span></Link>
                 ): (
-                    <Link href={'/login'}><span className="text-blue-500">Login</span></Link>
+                    <Link href={'/signup'}><span className="text-blue-500">Login</span></Link>
                 )}
             </div>
         </div>

@@ -11,8 +11,19 @@ const VerticalNavbar = ({ name }: any) => {
   };
   return (
     <div className="h-screen w-64 bg-gray-200 p-4">
-      <div className="mb-8">
-        <h2 className="text-xl font-semibold">Hi {name}!</h2>
+      <Link href={"/"}>
+        <div
+          className={
+            "border-2 border-black rounded-md px-4 py-2  my-4 max-w-48 text-black"
+          }
+        >
+          <h3>Home &lt;--</h3>
+        </div>
+      </Link>
+      <div className="mb-8 mt-4">
+        {isloggedIn && (
+          <h2 className="text-xl font-semibold">Hi {name}!</h2>
+        )}
         <p className="text-gray-600">Welcome to your dashboard</p>
       </div>
       <div>
@@ -23,7 +34,7 @@ const VerticalNavbar = ({ name }: any) => {
                 Book Appointment
               </li>
             </Link>
-            <Link href={"/view-reservation"}>
+            <Link href={"/viewreservation"}>
               <li className="text-gray-800 hover:text-blue-500 cursor-pointer">
                 View Reservations
               </li>

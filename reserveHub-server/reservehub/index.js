@@ -1,8 +1,8 @@
 const express = require("express");
 const cors = require("cors");
-require('dotenv').config()
+require("dotenv").config();
 const { Pool } = require("pg");
-const {createBookingRef} = require("./utility/bookingRef.js");
+const { createBookingRef } = require("./utility/bookingRef.js");
 const app = express();
 
 app.use(express.json());
@@ -50,7 +50,7 @@ app.get("/api/apps_retrival", async (req, res) => {
     });
   } finally {
     // await client.release();
-    await client.end()
+    await client.end();
   }
 });
 
@@ -84,43 +84,46 @@ app.get("/api/app_retrival/:app_id", async (req, res) => {
   }
 });
 
-app.get("/api/apps_retrival_by_location/:location_name/:date", async (req, res) => {
-  const client = createClient();
-  let empty_array = [];
-  const location_name = req.params.location_name;
-  const date = req.params.date;
+app.get(
+  "/api/apps_retrival_by_location/:location_name/:date",
+  async (req, res) => {
+    const client = createClient();
+    let empty_array = [];
+    const location_name = req.params.location_name;
+    const date = req.params.date;
 
-  try {
-    await client.connect();
+    try {
+      await client.connect();
 
-    const app_row = await client.query(
-      "SELECT * FROM appointments WHERE app_location = $1 AND app_date = $2",
-      [location_name, date]
-    );
-    console.log(app_row.rows);
-    if (app_row.rows.length > 0) {
-      res.status(200).send({
-        status: "success",
-        body: app_row.rows,
-        message: `Retrieved appointments for location: ${location_name}`,
+      const app_row = await client.query(
+        "SELECT * FROM appointments WHERE app_location = $1 AND app_date = $2",
+        [location_name, date]
+      );
+      console.log(app_row.rows);
+      if (app_row.rows.length > 0) {
+        res.status(200).send({
+          status: "success",
+          body: app_row.rows,
+          message: `Retrieved appointments for location: ${location_name}`,
+        });
+      } else {
+        res.status(200).send({
+          status: "Not found",
+          body: empty_array,
+          message: "there are not appointments for this location",
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({
+        status: "failed",
+        message: "Internal server error",
       });
-    } else {
-      res.status(200).send({
-        status: "Not found",
-        body: empty_array,
-        message: "there are not appointments for this location",
-      });
+    } finally {
+      await client.end();
     }
-  } catch (error) {
-    console.error(error);
-    res.status(500).send({
-      status: "failed",
-      message: "Internal server error",
-    });
-  } finally {
-    await client.end();
   }
-});
+);
 
 app.post("/api/app-create", async (req, res) => {
   console.log(req.body);
@@ -491,7 +494,7 @@ app.post("/api/res-create", async (req, res) => {
       });
     }
   } catch (error) {
-    await client.query("ROLLBACK")
+    await client.query("ROLLBACK");
     console.error(error);
     res.status(500).send({
       status: "failed",
@@ -502,24 +505,113 @@ app.post("/api/res-create", async (req, res) => {
   }
 });
 
-app.get("/api/res-retrival", async(req, res)=> {
-  const client = createClient()
+app.get("/api/res-retrival", async (req, res) => {
+  const client = createClient();
   await client.connect();
 
   try {
-    const response  = await client.query("SELECT * FROM reservations");
-    if(response.rows.length > 0) {
+    const response = await client.query("SELECT * FROM reservations");
+    if (response.rows.length > 0) {
       res.status(200).send({
         status: "Success",
         body: response.rows,
-        message: "Reservations successfully retrieved"
-      })
+        message: "Reservations successfully retrieved",
+      });
     }
-    
   } catch (error) {
     console.error(error);
     res.status(500).send({
       status: "Failed",
+      message: "Internal server error",
+    });
+  } finally {
+    await client.end();
+  }
+});
+
+// client reservation apis
+
+app.get("/api/search-client-details", async (req, res) => {
+  const lastname = req.query.lastname;
+  const phonenumber = req.query.phonenumber;
+  const zipcode = req.query.zipcode;
+
+  const client = createClient();
+
+  try {
+    await client.connect();
+
+    const client_row = await client.query(
+      "SELECT client_id FROM clients WHERE client_surname = $1 and client_phone_number = $2 and client_zipcode  = $3",
+      [lastname, phonenumber, zipcode]
+    );
+
+    if (client_row.rows.length > 0) {
+      //can sya we found the client
+      const { client_id } = client_row.rows[0];
+
+      const client_res_row = await client.query(
+        "SELECT * FROM reservations WHERE client_id = $1",
+        [client_id]
+      );
+
+      if (client_res_row.rows.length > 0) {
+        //we found their reservation can return to the client their infomation
+        res.status(200).send({
+          status: "Found",
+          body: client_res_row.rows,
+          message: "Found client reservation",
+        });
+      } else {
+        res.status(404).send({
+          status: "failed",
+          message: "No reservation found for client",
+        });
+      }
+    } else {
+      res.status(404).send({
+        status: "failed",
+        message: "No client found in system",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      status: "failed",
+      message: "Internal server error",
+      errormsg: error,
+    });
+  } finally {
+    await client.end();
+  }
+});
+
+
+app.get("/api/search-bookingref", async (req, res)=> {
+  const booking_ref = req.query.bookingRef;
+
+  const client = createClient();
+
+  try {
+    await client.connect();
+
+    const reservation_row = await client.query("SELECT * FROM reservations WHERE booking_ref = $1", [booking_ref])
+
+    if(reservation_row.rows.length > 0 ) {
+      res.status(200).send({
+        status: "Found",
+        body: reservation_row.rows
+      })
+    } else {
+      res.status(404).send({
+        status: "Not found",
+        message: "No reservation found"
+      })
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      status: "failed",
       message: "Internal server error"
     })
   } finally {
@@ -527,13 +619,6 @@ app.get("/api/res-retrival", async(req, res)=> {
   }
 })
 
-
-
-
-
-
-
 app.listen(5000, () => {
   console.log("app is listening on port 5000");
-  
 });

@@ -14,14 +14,15 @@ const SignUp = () => {
   const [email, setEmail] = useState("");
   const [signupSuccess, setSignupSuccess] = useState(false);
   const [successMsg, setSuccessMsg] = useState<String>("");
-  const loginStatus: boolean = useSelector((state:any) => state.global.isloggedin);
+  const loginStatus: boolean = useSelector(
+    (state: any) => state.global.isloggedin
+  );
 
-  const handleSubmit =  async (event:any) => {
-    
+  const handleSubmit = async (event: any) => {
     const options = { email };
     console.log(email);
 
-     await fetch("http://localhost:5000/api/signup", {
+    await fetch("http://localhost:5000/api/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json;charset=utf-8",
@@ -32,52 +33,76 @@ const SignUp = () => {
         if (!response.ok) {
           throw new Error("Network request unsuccessful");
         }
-        setSignupSuccess(true)
+        setSignupSuccess(true);
         return response.json();
-    })
-    .then(({data, message}) => {
+      })
+      .then(({ data, message }) => {
         console.log(data);
-        setSuccessMsg(message)
-        console.log(successMsg)
+        setSuccessMsg(message);
+        console.log(successMsg);
       })
       .catch((error) => {
         console.error("Fetch error ", error.message);
       });
   };
 
- 
-
-
   return (
     <div>
-        <NavBar isloggedin={loginStatus}/>
-        <Link href={"/"} className="block">
-          <button>Go Home</button>
-        </Link>
-      <form  method='POST' action={'/dashboard'} onSubmit={handleSubmit}>
-        <p>Lets begin with your email</p>
-
-        <div>
-          <input
-            type="email"
-            name="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            placeholder="Email"
-            className="text-black rounded-md"
-          />
+      <Link href={"/"}>
+        <div
+          className={
+            "border-2 border-white rounded-md px-4 py-2 mx-5 my-4 max-w-48"
+          }
+        >
+          <h3>Home &lt;--</h3>
         </div>
-        <button type="submit">Create Account</button>
-        {signupSuccess && (
-            <p>{successMsg}</p>
-        )}
-        <p>You can choose to skip and authenticate later</p>
-        <Link href={"/dashboard"} className="block">
-          <button>Skip</button>
-        </Link>
-      </form>
+      </Link>
+      <div className="flex justify-center items-start h-screen p-8">
+        {/* Left module: Login form */}
+        <div className="w-full md:w-1/2 min-h-[300px] p-6 bg-white shadow-lg rounded-lg flex flex-col justify-center">
+          <form method="POST" action={"/dashboard"} onSubmit={handleSubmit}>
+            <h2 className="text-xl font-bold mb-4 text-black">
+              Employee/Volunteer Login
+            </h2>
+            <p className="mb-2 text-black">Let's begin with your email</p>
+
+            <div className="mb-4">
+              <input
+                type="email"
+                name="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                placeholder="Email"
+                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md"
+            >
+              Login
+            </button>
+
+            {signupSuccess && (
+              <p className="text-green-500 mt-4">{successMsg}</p>
+            )}
+          </form>
+        </div>
+
+        {/* Right module: Skip button */}
+        <div className="w-full md:w-1/2 min-h-[300px] p-6 bg-white shadow-lg rounded-lg ml-8 flex flex-col justify-center items-center">
+          <h2 className="text-lg font-bold mb-4 text-black">For Clients</h2>
+          <p className="mb-4 text-black">Skip, click below:</p>
+          <Link href={"/dashboard"} className="block">
+            <button className="bg-red-500 hover:bg-red-600 text-white py-2 px-6 rounded-md">
+              Skip
+            </button>
+          </Link>
+        </div>
+      </div>
     </div>
   );
 };
