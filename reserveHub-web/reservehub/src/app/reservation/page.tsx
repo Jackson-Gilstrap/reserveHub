@@ -70,6 +70,7 @@ const Reservation = () => {
         client_status={clientStatus}
         reminder_status={reminderStatus}
       />
+      <h2 className="text-left text-2xl font-semibold my-6 ml-6">Modules</h2>
       <ReservationModules
         questionnaire_status={questionnaireStatus}
         booking_status={bookingStatus}

@@ -10,18 +10,29 @@ export default function Home() {
   // console.log(employee_info);
 
   return (
+    <>
+    
     <div>
-      <NavBar isUserLoggedIn={loginStatus} />
-      <h1 className="block text-center my-4">
-        Hartwick VITA/TCE
+      {/* <NavBar isUserLoggedIn={loginStatus} /> */}
+      <h1 className="text-center text-6xl mt-8">
+        Volunteer
         <br />
-        Reservation Portal
+        Income & Tax
+        <br/>
+        Assistance
+        <br/>
+        <span>&#40;VITA&#41;</span>
       </h1>
-      <Link href={"/signup"}>
-        <span className="bg-white text-sky-600 block text-center max-w-48 mx-auto py-2 rounded-full hover:bg-black hover:text-sky-400 hover:cursor-pointer">
-          Start here
+      <h2 className="text-center text-2xl mt-4">
+        Begin Your Reservation Proccess Below
+      </h2>
+      <Link href={"/dashboard"}>
+        <span className="bg-slate-500 text-sky-600 block text-center max-w-48 mt-6 mx-auto py-2 rounded-full hover:bg-black hover:text-sky-400 hover:cursor-pointer">
+          Start
         </span>
       </Link>
     </div>
+    <footer className="text-center text-slate-200">Hartwick College Volunteer Income Tax Services</footer>
+    </>
   );
 }

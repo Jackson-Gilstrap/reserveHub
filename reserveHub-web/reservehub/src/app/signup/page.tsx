@@ -1,14 +1,10 @@
 "use client";
-//flow
-//user comes in,
-//enters first name and last name
-//selects whether they are signing up with email or phone then inputs the respective one
-//on back end we will check what type we are sending over email or phone once that is good
-//then route them to the dashboard and check if the email they signed up with is a hartwick email will give extra permissions
 import Link from "next/link";
 import NavBar from "@/components/navbar";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+
+import { signIn } from "next-auth/react";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
@@ -18,32 +14,16 @@ const SignUp = () => {
     (state: any) => state.global.isloggedin
   );
 
-  const handleSubmit = async (event: any) => {
-    const options = { email };
-    console.log(email);
-
-    await fetch("http://localhost:5000/api/signup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json;charset=utf-8",
-      },
-      body: JSON.stringify(options),
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    const res =  await signIn("credentials", {
+      redirect:true,
+      email: email,
+      password: "password",
+      callbackUrl: "/dashboard"
     })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network request unsuccessful");
-        }
-        setSignupSuccess(true);
-        return response.json();
-      })
-      .then(({ data, message }) => {
-        console.log(data);
-        setSuccessMsg(message);
-        console.log(successMsg);
-      })
-      .catch((error) => {
-        console.error("Fetch error ", error.message);
-      });
+
+    
   };
 
   return (

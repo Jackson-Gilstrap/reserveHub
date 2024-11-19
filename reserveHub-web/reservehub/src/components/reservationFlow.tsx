@@ -8,19 +8,19 @@ const ReservationFlow =  ( props: {questionnaire_status:any, booking_status:any,
       };
     return (
         <>
-        <div className={"border-2 border-white flex flex-col md:flex-row justify-evenly items-center p-3 mx-10" }>
-          <p className={"my-4"}>
+        <div className="flex flex-row justify-center items-center border-y-4  border-x-4 border-black mx-6 divide-x-2 divide-black h-36 w-19/20">
+          <p className={"my-4 h- text-center"}>
             Completed Questionnaire:{" "}
             {getStatusIndicator(props.questionnaire_status)}
           </p>
-          <p className={"my-4"}>
+          <p className={"my-4 h- text-center"}>
             Completed Appointment Selection:{" "}
             {getStatusIndicator(props.booking_status)}
           </p>
-          <p className={"my-4"}>
+          <p className={"my-4 h- text-center"}>
             Completed Client Details: {getStatusIndicator(props.client_status)}
           </p>
-          <p className={"my-4"}>
+          <p className={"my-4 h- text-center"}>
             Completed Reminders Confirmation:{" "}
             {getStatusIndicator(props.reminder_status)}
           </p>

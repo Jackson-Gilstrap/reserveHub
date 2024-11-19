@@ -92,7 +92,7 @@ const Reservations = () => {
           </div>
           <div id="search bar">
             <label htmlFor="search-booking-ref">Search</label>
-            <input name="search-booking-ref" id="search-booking-ref" type="text" placeholder="Booking Ref" value={searchTerm} onChange={handleSearch}/>
+            <input name="search-booking-ref" id="search-booking-ref" type="text" placeholder="Booking Ref" value={searchTerm} onChange={handleSearch} className="text-black"/>
           </div>
           <div className="container mx-auto px-4 py-6">
       <h2 className="text-xl font-semibold mb-4">Reservations</h2>

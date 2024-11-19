@@ -10,9 +10,9 @@ const ReservationModules = (props: {
 }) => {
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mx-10 my-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mx-6 my-4">
         <Link href={"/reservation/questionnaire"}>
-          <div className="border-2 border-white px-4 py-6 bg-gray-800 text-white rounded-lg shadow-md">
+          <div className="border-2 border-white px-4 py-6 bg-gray-600 text-white rounded-lg shadow-md">
             <h2 className="text-xl font-semibold">Our Questionnaire</h2>
             <p className="mt-2">
               Complete this to find out if you are eligible for our services

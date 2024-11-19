@@ -1,7 +1,7 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import StoreProvider from "./StoreProvider";
-
+import  {Providers} from './Providers'
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
@@ -17,6 +17,7 @@ export default function RootLayout({ children }:any ) {
         <title>{metadata.title}</title>
       </head>
       <body className={inter.className}>
+        
         <StoreProvider children={children}/>
         </body>
     </html>
